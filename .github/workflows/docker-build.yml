@@ -1,0 +1,37 @@
+name: Build and Push Workerd Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get Latest Workerd Version
+        id: get_version
+        run: |
+          latest_version=$(curl -sL -I -o /dev/null -w '%{url_effective}' https://github.com/cloudflare/workerd/releases/latest | sed 's#.*/tag/##')
+          echo "Latest version detected: $latest_version"
+          echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
+
+      - name: Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/workerd:${{ steps.get_version.outputs.latest_version }}
+          build-args: |
+            WORKERD_VERSION=${{ steps.get_version.outputs.latest_version }}
