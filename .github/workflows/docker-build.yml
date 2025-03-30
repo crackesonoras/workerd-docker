@@ -32,6 +32,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/workerd:${{ steps.get_version.outputs.latest_version }}
+          tags: |
+            crackesonoras/workerd:${{ steps.get_version.outputs.latest_version }}
+            crackesonoras/workerd:latest
           build-args: |
             WORKERD_VERSION=${{ steps.get_version.outputs.latest_version }}
