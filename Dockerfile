@@ -7,8 +7,20 @@ ARG TARGETARCH
 ARG WORKERD_VERSION
 WORKDIR /build
 
+# Install required packages for downloading and preparing the binary
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gzip \
+    libatomic1 \
+    libgcc-s1 \
+    libstdc++6 \
+    libssl3 \
+    zlib1g \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 # If WORKERD_VERSION is not specified, retrieve the latest version from GitHub.
-# If you want a specific version, you can fork this repository and set the WORKERD_VERSION build argument.
 RUN if [ -z "$WORKERD_VERSION" ]; then \
     echo "Retrieving the latest version of workerd..."; \
     WORKERD_VERSION=$(curl -sL -I -o /dev/null -w '%{url_effective}' https://github.com/cloudflare/workerd/releases/latest | sed 's#.*/tag/##'); \
