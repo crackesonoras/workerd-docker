@@ -1,4 +1,4 @@
 # workerd-docker 
 Selfhosting Cloudflare Workers with Docker.
 
-Latest Workerd Version: v1.20250529.0
+Latest Workerd Version: v1.20250531.0
